@@ -158,7 +158,19 @@
                                             <span t-esc="line.price_unit * po_line.product_qty" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
                                         </td>
                                         <td class="text-end text-nowrap">
-                                            <span t-esc="po_line.price_unit * po_line.product_qty" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                            
+                                            <!--kondisi cek apakah purchase tax include atau tax out-->
+                                            <!--https://www.falinwa.com/odoo/helpdesk.ticket/13291-->
+                                            <t t-set="is_tax_included" t-value="po_line.taxes_id[:1].price_include_override == 'tax_included'"/>
+                                            <t t-if="is_tax_included">
+                                                <t t-set="price_tax" t-value="((po_line.price_unit or 0) * po_line.product_uom_qty * po_line.taxes_id.amount / (100 + po_line.taxes_id.amount))"/>
+                                                <span t-esc="po_line.price_unit * po_line.product_qty - (price_tax)" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span t-esc="po_line.price_unit * po_line.product_qty" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                            </t>
+                                            
+                                            <!--<span t-esc="po_line.price_unit * po_line.product_qty" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>-->
                                         </td>
                                     </tr>
                                 </t>
