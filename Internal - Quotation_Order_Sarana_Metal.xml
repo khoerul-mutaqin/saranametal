@@ -118,7 +118,13 @@
                         <t t-set="total_price_subtotal" t-value="total_price_subtotal + line.price_subtotal"/>
                         <!--<t t-set="total_cost_total" t-value="total_cost_total + ((line.x_studio_cost_1 or 0) * line.product_qty)"/>-->
                         <t t-set="total_po_taxes" t-value="total_po_taxes + line.cdp_total_po_taxes"/>
-                        <t t-set="total_po_with_taxes" t-value="total_cost_total + total_po_taxes"/>
+                        <t t-if="is_tax_included">
+                            <t t-set="total_po_with_taxes" t-value="x_total_cost_total + total_po_taxes"/>
+                        </t>
+                        <t t-else="">
+                            <t t-set="total_po_with_taxes" t-value="total_cost_total + total_po_taxes"/>
+                        </t>
+                                   
                     </t>
                 
                     <tr t-att-class="'fw-bold o_line_section' if (line.display_type == 'line_section' or line.product_type == 'combo') else 'fst-italic o_line_note' if line.display_type == 'line_note' else ''">
@@ -141,11 +147,11 @@
                                         <t t-if="po_line.order_id.id not in processed_po_ids and po_line.order_id.state in ['purchase', 'done']">
                                             <t t-set="x_total_cost_total" t-value="x_total_cost_total + po_line.order_id.amount_untaxed"/>
                                             <t t-set="processed_po_ids" t-value="processed_po_ids + [po_line.order_id.id]"/>
-                                        </t>                                        <!--<t t-set="price_tax" t-value="inc_total_cost_total + ((po_line.amount_untaxed))"/>-->
+                                        </t>                                        
                                     </t>
                                     
                                     
-                                    <t t-set="total_po_with_taxes" t-value="total_cost_total + total_po_taxes"/>
+                                    <!--<t t-set="total_po_with_taxes" t-value="total_cost_total + total_po_taxes"/>-->
                                     <tr>
                                         <td><span t-field="po_line.partner_id"/></td>
                                         <td><span t-field="po_line.product_id.display_name"/></td>
@@ -231,11 +237,13 @@
                             <!--https://www.falinwa.com/odoo/helpdesk.ticket/13291-->
                             
                             <t t-if="is_tax_included">
+                                
                                 <span t-out="x_total_cost_total" t-options="{'widget':'monetary','display_currency':doc.currency_id}"/>
                             </t>
                             <t t-else="">
                                 <span t-out="total_cost_total" t-options="{'widget':'monetary','display_currency':doc.currency_id}"/>
                             </t>
+                            <!--    <span t-out="total_cost_total" t-options="{'widget':'monetary','display_currency':doc.currency_id}"/>-->
                         </td>
                     </tr>
                     <tr class="fw-bold">
